@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_session_context" "current" {
   arn = data.aws_caller_identity.current.arn
 }
@@ -12,9 +14,9 @@ module "eks" {
   vpc_id                         = var.vpc_id
   subnet_ids                     = var.private_subnets
   cluster_endpoint_public_access = true
-  cluster_endpoint_public_access_cidrs = ["123.231.86.187/32"]
+  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
   create_cloudwatch_log_group = false
-  kms_key_administrators = [ata.aws_iam_session_context.current.issuer_arn]
+  kms_key_administrators = [data.aws_iam_session_context.current.issuer_arn]
   create_kms_key = true
   manage_aws_auth_configmap = true
 
@@ -27,7 +29,7 @@ module "eks" {
     one = {
       name = "node-group-1"
 
-      instance_types = ["t3.small"]
+      instance_types = ["t3.xlarge"]
       disk_size = 30
       min_size     = 1
       max_size     = 3
@@ -37,7 +39,7 @@ module "eks" {
     two = {
       name = "node-group-2"
 
-      instance_types = ["t3.small"]
+      instance_types = ["t3.xlarge"]
       disk_size = 30
       min_size     = 1
       max_size     = 2
